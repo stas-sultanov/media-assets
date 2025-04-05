@@ -1,6 +1,0 @@
-{
-	"Azure.Monitor.Default.InstrumentationKey": "f24d3769-448e-43a3-9bc7-0b6854b83c1c",
-	"Azure.Monitor.Default.IngestEndpoint": "https://northeurope-2.in.applicationinsights.azure.com/",
-	"Azure.Storage.Default.QueueServiceUri": "https://stasppdemodev32.queue.core.windows.net/",
-	"PowerPlatform.ManagedIdentity.Default.Id": "d9207a7b-2866-496a-991b-bc8e3af0bc1e"
-}

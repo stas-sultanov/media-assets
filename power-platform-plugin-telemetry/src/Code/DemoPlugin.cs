@@ -1,5 +1,5 @@
 // Created by Stas Sultanov.
-// Copyright © Stas Sultanov.
+// Copyright Â© Stas Sultanov.
 
 namespace Stas.PowerPlatformDemo.Plugins;
 
@@ -28,7 +28,7 @@ public sealed class DemoPlugin : Plugin<PluginConfiguration>
 		Thread.Sleep(200);
 
 		// track trace telemetry
-		// the trace will be linked to parent reqeuest activity because it is trackd within the scope
+		// the trace will be linked to parent request activity because it is track within the scope
 		pluginContext.TelemetryClient.TrackTrace("Some work done", SeverityLevel.Information);
 
 		// imitate some other work

@@ -6,12 +6,12 @@
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<FileVersion>$(AssemblyVersion)</FileVersion>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
 		<PowerAppsTargetsPath>$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\PowerApps</PowerAppsTargetsPath>
 		<ProjectTypeGuids>{4C25E9B5-9FA6-436c-8E19-B395D2A65FAF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-		<RootNamespace>Stas.PowerPlatformDemo.Plugins</RootNamespace>
 		<TargetFramework>net462</TargetFramework>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<WarningLevel>9999</WarningLevel>
@@ -47,14 +47,11 @@
 				<Product>Demo</Product>
 				<RepositoryType>git</RepositoryType>
 				<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-				<Title>Power Platform Plugin Telemetry Client Demoe</Title>
+				<Title>Power Platform Plugin Telemetry Client Demo</Title>
 				<Version>$(AssemblyVersion)</Version>
 			</PropertyGroup>
 			<ItemGroup>
 				<None Include="package.md" Pack="True" PackagePath="\" />
-			</ItemGroup>
-			<ItemGroup>
-				<PackageReference Include="Microsoft.SourceLink.GitHub" Version="*" PrivateAssets="All" />
 			</ItemGroup>
 		</When>
 	</Choose>

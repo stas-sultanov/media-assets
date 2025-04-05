@@ -1,5 +1,5 @@
 // Created by Stas Sultanov.
-// Copyright © Stas Sultanov.
+// Copyright Â© Stas Sultanov.
 
 namespace Stas.PowerPlatformDemo.Plugins;
 
@@ -17,20 +17,20 @@ public static class OrganizationServiceExtensions
 
 	private static readonly ColumnSet environmentVariableColumnSet = new
 	(
-		"defaultvalue",
-		"environmentvariabledefinitionid",
-		"schemaname"
+		@"defaultvalue",
+		@"environmentvariabledefinitionid",
+		@"schemaname"
 	);
 
 	private static readonly LinkEntity environmentVariableLinkEntity = new()
 	{
 		JoinOperator = JoinOperator.LeftOuter,
-		LinkFromEntityName = "environmentvariabledefinition",
-		LinkFromAttributeName = "environmentvariabledefinitionid",
-		LinkToEntityName = "environmentvariablevalue",
-		LinkToAttributeName = "environmentvariabledefinitionid",
-		Columns = new ColumnSet("value"),
-		EntityAlias = "v"
+		LinkFromEntityName = @"environmentvariabledefinition",
+		LinkFromAttributeName = @"environmentvariabledefinitionid",
+		LinkToEntityName = @"environmentvariablevalue",
+		LinkToAttributeName = @"environmentvariabledefinitionid",
+		Columns = new ColumnSet(@"value"),
+		EntityAlias = @"v"
 	};
 
 	#endregion
@@ -48,7 +48,7 @@ public static class OrganizationServiceExtensions
 	)
 	{
 		// create query
-		var query = new QueryExpression("environmentvariabledefinition")
+		var query = new QueryExpression(@"environmentvariabledefinition")
 		{
 			ColumnSet = environmentVariableColumnSet,
 			LinkEntities = { environmentVariableLinkEntity },
@@ -56,7 +56,7 @@ public static class OrganizationServiceExtensions
 			{
 				Conditions =
 				{
-					new ConditionExpression("schemaname", ConditionOperator.Equal, name)
+					new ConditionExpression(@"schemaname", ConditionOperator.Equal, name)
 				}
 			}
 		};
@@ -73,8 +73,8 @@ public static class OrganizationServiceExtensions
 		}
 
 		// get value
-		var result = (entity.GetAttributeValue<AliasedValue>("v.value")?.Value?.ToString())
-			?? entity.GetAttributeValue<String>("defaultvalue");
+		var result = (entity.GetAttributeValue<AliasedValue>(@"v.value")?.Value?.ToString())
+			?? entity.GetAttributeValue<String>(@"defaultvalue");
 
 		return result;
 	}

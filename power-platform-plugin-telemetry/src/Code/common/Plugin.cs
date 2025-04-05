@@ -1,5 +1,5 @@
 // Created by Stas Sultanov.
-// Copyright © Stas Sultanov.
+// Copyright Â© Stas Sultanov.
 
 namespace Stas.PowerPlatformDemo.Plugins;
 
@@ -17,7 +17,7 @@ using Stas.PowerPlatformDemo.Configuration;
 /// <summary>
 /// Represents an abstract base class for plugins.
 /// </summary>
-/// <param name="configurationEnvironmentVariableKeyName">The name of the key of environment varibale that contains configuration of the plugin.</param>
+/// <param name="configurationEnvironmentVariableKeyName">The name of the key of environment variable that contains configuration of the plugin.</param>
 public abstract partial class Plugin<PluginConfigurationType>
 (
 	String configurationEnvironmentVariableKeyName
@@ -37,7 +37,7 @@ public abstract partial class Plugin<PluginConfigurationType>
 	#region Fields
 
 	/// <summary>
-	/// The name of the key of environment varibale that contains configuration of the plugin
+	/// The name of the key of environment variable that contains configuration of the plugin
 	/// </summary>
 	private readonly String configurationEnvironmentVariableKeyName = configurationEnvironmentVariableKeyName;
 
