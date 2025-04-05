@@ -5,15 +5,13 @@ namespace Stas.PowerPlatformDemo.Plugins;
 
 using Azure.Monitor.Telemetry;
 
-using Stas.PowerPlatformDemo.Configuration;
-
 /// <inheritdoc/>
 public sealed class DemoPlugin : Plugin<PluginConfiguration>
 {
 	#region Constructor
 
 	/// <inheritdoc/>
-	public DemoPlugin() : base(@"Stas_Demo")
+	public DemoPlugin() : base(@"Stas_DemoPlugin")
 	{
 	}
 

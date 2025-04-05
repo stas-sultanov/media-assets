@@ -46,7 +46,6 @@
 				<PackageTags>PowerPlatform;Demo;</PackageTags>
 				<Product>Demo</Product>
 				<RepositoryType>git</RepositoryType>
-				<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 				<Title>Power Platform Plugin Telemetry Client Demo</Title>
 				<Version>$(AssemblyVersion)</Version>
 			</PropertyGroup>

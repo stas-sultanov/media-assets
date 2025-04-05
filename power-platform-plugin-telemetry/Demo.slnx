@@ -5,4 +5,5 @@
 		<File Path="readme.md" />
 	</Folder>
 	<Project Path="src/Plugins.csproj" />
+	<Project Path="tests/PluginsTests.csproj" />
 </Solution>

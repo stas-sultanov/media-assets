@@ -12,8 +12,6 @@ using Azure.Monitor.Telemetry;
 using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.PluginTelemetry;
 
-using Stas.PowerPlatformDemo.Configuration;
-
 /// <summary>
 /// Represents an abstract base class for plugins.
 /// </summary>

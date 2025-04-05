@@ -1,7 +1,7 @@
 // Created by Stas Sultanov.
 // Copyright © Stas Sultanov.
 
-namespace Stas.PowerPlatformDemo.Configuration;
+namespace Stas.PowerPlatformDemo.Plugins;
 
 using Azure.Monitor.Telemetry;
 

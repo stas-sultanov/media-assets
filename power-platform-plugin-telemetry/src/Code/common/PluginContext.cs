@@ -18,8 +18,6 @@ using Microsoft.Xrm.Sdk;
 using Microsoft.Xrm.Sdk.Extensions;
 using Microsoft.Xrm.Sdk.PluginTelemetry;
 
-using Stas.PowerPlatformDemo.Configuration;
-
 /// <summary>
 /// Provides a collection of essential services for plugin execution in the Power Platform environment.
 /// This class encapsulates common services and contexts required for plugin operations.
@@ -98,15 +96,8 @@ public sealed class PluginContext<PluginConfigurationType> : IDisposable
 	/// </summary>
 	/// <param name="serviceProvider">The service provider.</param>
 	/// <param name="environmentVariablesConfigName">The name of the environment variable containing configuration settings.</param>
-	/// <exception cref="InvalidPluginExecutionException">Thrown if the service provider is null or configuration cannot be retrieved.</exception>
 	public PluginContext(IServiceProvider serviceProvider, String environmentVariablesConfigName)
 	{
-		// validate input parameter
-		if (serviceProvider == null)
-		{
-			throw new InvalidPluginExecutionException($"Parameter is null. Name: {nameof(serviceProvider)}.");
-		}
-
 		// retrieve required services
 		Logger = GetService<ILogger>(serviceProvider);
 		OrganizationServiceFactory = GetService<IOrganizationServiceFactory>(serviceProvider);
@@ -129,7 +120,7 @@ public sealed class PluginContext<PluginConfigurationType> : IDisposable
 		var telemetryClientConfiguration = Configuration.TelemetryClient;
 
 		// form telemetry tags
-		var tags = new List<KeyValuePair<String, String>>(telemetryClientConfiguration.Tags?.ToArray() ?? Array.Empty<KeyValuePair<String, String>>())
+		var tags = new List<KeyValuePair<String, String>>(telemetryClientConfiguration.Tags?.ToArray() ?? [])
 		{
 			new(TelemetryTagKeys.CloudRole, "PowerPlatform"),
 			new(TelemetryTagKeys.CloudRoleInstance, Environment.MachineName)

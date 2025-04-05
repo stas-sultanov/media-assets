@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<AnalysisLevel>latest-recomended</AnalysisLevel>
+		<AssemblyName>Stas.PowerPlatformDemo.PluginsTests</AssemblyName>
+		<EnableMSTestRunner>true</EnableMSTestRunner>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+		<FileVersion>$(AssemblyVersion)</FileVersion>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net462</TargetFramework>
+		<TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+		<TestingPlatformShowTestsFailure>true</TestingPlatformShowTestsFailure>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<WarningLevel>9999</WarningLevel>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Azure.Identity" Version="1.13.2" />
+		<PackageReference Include="Microsoft.CrmSdk.CoreAssemblies" Version="9.*" PrivateAssets="All" />
+		<PackageReference Include="Microsoft.PowerApps.MSBuild.Plugin" Version="1.*" PrivateAssets="All" />
+		<PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.*" PrivateAssets="All" />
+		<PackageReference Include="Moq" Version="4.20.72" />
+		<PackageReference Include="System.ClientModel" Version="1.*" />
+		<PackageReference Include="System.Memory.Data" Version="9.*" />
+		<PackageReference Include="System.Text.Json" Version="9.*" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
+		<PackageReference Include="MSTest" Version="3.*" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\src\Plugins.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+		<Using Include="System.Text.RegularExpressions" />
+		<Using Include="System.Threading.Tasks" />
+	</ItemGroup>
+
+</Project>
