@@ -6,11 +6,10 @@ This is a minimal .NET console application that demonstrates how to use the [Azu
 
 - Initialization of the telemetry client
 - Tracking of:
-  - Custom events
-  - Exceptions
-  - Metrics
-  - Activities (operations)
-- Parallel publishing of telemetry to configured publishers (e.g., Azure Monitor)
+  - Request
+  - In-Proc Dependency
+  - HTTP Dependency
+- Parallel publishing of telemetry to configured publishers.
 
 ## 🛠 Prerequisites
 
@@ -19,13 +18,14 @@ This is a minimal .NET console application that demonstrates how to use the [Azu
 
 ## ⚙️ Configuration
 
-To run this application, update the configuration to include your Application Insights connection string or Entra credentials depending on your telemetry publisher.
+To run this application, update the code with information from your Application Insights connection string.
+- Ingestion Endpoint
+- Instrumentation Key
 
 ## 📂 Structure
 
-- `Program.cs` — Entry point of the application; contains usage examples of telemetry tracking
-- `TelemetryClient` setup — Shows how to instantiate and use the telemetry client
-- `Sample scenarios` — Demonstrates tracking of synthetic operations and exception handling
+- `Main.cs` — Entry point of the application
+- `Program.cs` — Shows how to instantiate and use the telemetry client
 
 ## 💡 Purpose
 

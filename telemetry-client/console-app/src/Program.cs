@@ -1,43 +1,39 @@
 ﻿// Created by Stas Sultanov.
 // Copyright © Stas Sultanov.
 
-using System.Diagnostics;
-using System.Net.Http;
-
 using Azure.Monitor.Telemetry;
+using Azure.Monitor.Telemetry.Dependency;
 using Azure.Monitor.Telemetry.Publish;
 
 internal sealed partial class Program : IDisposable
 {
-	private const String appInsightsIngestionUrl = "https://northeurope-2.in.applicationinsights.azure.com/";
-	private const String appInsightsInstrumentationKey = "c22cc09b-d18c-464c-9c65-8059764f9f50";
+	private const String appInsightsIngestionUrl = "[INSERT THE INGESTION ENDPOINT HERE]";
+	private const String appInsightsInstrumentationKey = "[INSERT THE INSTRUMENTATION KEY HERE]";
+	private const String sampleDependencyUri = "https://www.google.com/"; // change if needed
 
 	#region Static
 
-	private static readonly Uri proccessRequestUri = new(@"exe:process");
+	private static readonly Uri processRequestUri = new(@"exe:process");
 
 	private static readonly IReadOnlyList<KeyValuePair<String, String>> processRequestTags =
 	[
 		new (TelemetryTagKeys.OperationName, @"SampleRequest")
 	];
 
+	/// <summary>
+	/// The helper function that generates activity ids.
+	/// </summary>
+	/// <returns></returns>
 	private static String GetActivityId()
 	{
 		return Guid.NewGuid().ToString("N");
 	}
 
-	private static Random random = new Random();
-
-	public static string RandomString(int length)
-	{
-		const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-		return new string(Enumerable.Repeat(chars, length)
-			.Select(s => s[random.Next(s.Length)]).ToArray());
-	}
-
 	#endregion
 
 	#region Fields
+
+	private readonly HttpClient sampleDependencyCallHttpClient;
 
 	private readonly TelemetryClient telemetryClient;
 
@@ -47,6 +43,9 @@ internal sealed partial class Program : IDisposable
 
 	#region Constructors
 
+	/// <summary>
+	/// Initializes a new instance of the <see cref="Program"/> class.
+	/// </summary>
 	public Program()
 	{
 		// create an HTTP client for the telemetry publisher
@@ -60,17 +59,23 @@ internal sealed partial class Program : IDisposable
 			new Guid(appInsightsInstrumentationKey)
 		);
 
-		// create a telemetry client with the telemetry publisher
-		telemetryClient = new TelemetryClient(telemetryPublisher)
+		// create initial telemetry context
+		// this tags will be sent with each telemetry item
+		var telemetryContext = new TelemetryTags()
 		{
-			// set initial context
-			// this tags should be sent with each telemetry item
-			Context = new()
-			{
-				CloudRole = "local",
-				CloudRoleInstance = Environment.MachineName
-			}
+			CloudRole = "local",
+			CloudRoleInstance = Environment.MachineName
 		};
+
+		// initialize a telemetry client
+		telemetryClient = new TelemetryClient(telemetryPublisher, telemetryContext);
+
+		// create a telemetry tracked HTTP client handler
+		// the handler will be disposed by the HTTP client
+		var handler = new TelemetryTrackedHttpClientHandler(telemetryClient, GetActivityId);
+
+		// initialize a sample dependency call HTTP client
+		sampleDependencyCallHttpClient = new HttpClient(handler);
 	}
 
 	#endregion
@@ -80,6 +85,8 @@ internal sealed partial class Program : IDisposable
 	/// <inheritdoc/>
 	public void Dispose()
 	{
+		sampleDependencyCallHttpClient?.Dispose();
+
 		telemetryPublisherHttpClient?.Dispose();
 	}
 
@@ -87,25 +94,18 @@ internal sealed partial class Program : IDisposable
 
 	#region Methods
 
-	public async Task Run(CancellationToken cancellationToken)
+	public async Task<Int32> Run(CancellationToken cancellationToken)
 	{
-		telemetryClient.TrackPageView
-		(
-			DateTime.UtcNow,
-			TimeSpan.FromMilliseconds(1),
-			RandomString(512),
-			"SamplePageView",
-			new Uri("https://gostas.dev")
-		);
-
 		// sample process request
-		//await ProccessRequest(cancellationToken);
+		var success = await ProcessRequest(cancellationToken);
 
 		// publish telemetry
 		_ = await telemetryClient.PublishAsync(cancellationToken);
+
+		return success ? 0 : -1;
 	}
 
-	private async Task ProccessRequest(CancellationToken cancellationToken)
+	private async Task<Boolean> ProcessRequest(CancellationToken cancellationToken)
 	{
 		// because this is a new request, we should add OperationId to the context
 		telemetryClient.Context = telemetryClient.Context with
@@ -120,7 +120,7 @@ internal sealed partial class Program : IDisposable
 		await Task.Delay(100, cancellationToken);
 
 		// process internal request
-		var success = await ProccessSampleInProc(cancellationToken);
+		var success = await ProcessSampleInProc(cancellationToken);
 
 		// simulate work
 		await Task.Delay(150, cancellationToken);
@@ -138,14 +138,16 @@ internal sealed partial class Program : IDisposable
 			time,
 			duration,
 			activityId,
-			proccessRequestUri,
+			processRequestUri,
 			responseCode,
 			success,
 			tags: processRequestTags
 		);
+
+		return success;
 	}
 
-	private async Task<Boolean> ProccessSampleInProc(CancellationToken cancellationToken)
+	private async Task<Boolean> ProcessSampleInProc(CancellationToken cancellationToken)
 	{
 		// begin in-proc dependency activity
 		telemetryClient.ActivityScopeBegin(GetActivityId, out var time, out var timestamp, out var activityId, out var context);
@@ -157,8 +159,11 @@ internal sealed partial class Program : IDisposable
 		// the Event will have parent operation id set to the top activityId
 		telemetryClient.TrackEvent("In Proc Started");
 
-		// simulate work
-		await Task.Delay(200, cancellationToken);
+		// make a dependency call
+		// the telemetry of this dependency call will be captured by the instance of TelemetryTrackedHttpClientHandler
+		var sampleDependencyCallResult = await sampleDependencyCallHttpClient.GetAsync(sampleDependencyUri);
+
+		var success = sampleDependencyCallResult.IsSuccessStatusCode;
 
 		// track sample Trace
 		// the Trace will have parent operation id set to the top activityId
@@ -168,9 +173,9 @@ internal sealed partial class Program : IDisposable
 		telemetryClient.ActivityScopeEnd(context, timestamp, out var duration);
 
 		// track the in-proc dependency
-		telemetryClient.TrackDependencyInProc(time, duration, activityId, "Sample", true);
+		telemetryClient.TrackDependencyInProc(time, duration, activityId, "Sample", success);
 
-		return true;
+		return success;
 	}
 
 	#endregion

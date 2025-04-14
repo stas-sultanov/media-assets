@@ -23,7 +23,7 @@
 		<PackageReference Include="Microsoft.CrmSdk.CoreAssemblies" Version="9.*" PrivateAssets="All" />
 		<PackageReference Include="Microsoft.PowerApps.MSBuild.Plugin" Version="1.*" PrivateAssets="All" />
 		<PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.*" PrivateAssets="All" />
-		<PackageReference Include="Stas.Azure.Monitor.Telemetry" Version="1.1.0-rc" />
+		<PackageReference Include="Stas.Azure.Monitor.Telemetry" Version="1.*" />
 	</ItemGroup>
 
 	<Choose>

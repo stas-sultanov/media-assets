@@ -13,7 +13,7 @@ public sealed class DemoPlugin : Plugin<PluginConfiguration>
 	/// <inheritdoc/>
 	public DemoPlugin()
 	// TODO: provide here a name of the environment variable that holds configuration
-	: base(@"gostas_DemoPlugin")
+	: base(@"[INSERT ENVIRONMENT VARIABLE NAME]")
 	{
 	}
 

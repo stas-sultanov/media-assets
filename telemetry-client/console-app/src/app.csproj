@@ -3,16 +3,13 @@
 	<PropertyGroup>
 		<LangVersion>latest</LangVersion>
 		<OutputType>Exe</OutputType>
-		<TargetFramework>net462</TargetFramework>
+		<TargetFramework>net9.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Reference Include="Azure.Monitor.Telemetry">
-			<HintPath>..\..\..\azure-monitor-telemetry\src\bin\Release\net462\Azure.Monitor.Telemetry.dll</HintPath>
-		</Reference>
-		<Reference Include="System.Net.Http" />
+		<PackageReference Include="Stas.Azure.Monitor.Telemetry" Version="1.*" />
 	</ItemGroup>
 
 </Project>
