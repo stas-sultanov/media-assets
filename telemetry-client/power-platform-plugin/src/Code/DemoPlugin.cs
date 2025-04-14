@@ -11,7 +11,9 @@ public sealed class DemoPlugin : Plugin<PluginConfiguration>
 	#region Constructor
 
 	/// <inheritdoc/>
-	public DemoPlugin() : base(@"Stas_DemoPlugin")
+	public DemoPlugin()
+	// TODO: provide here a name of the environment variable that holds configuration
+	: base(@"gostas_DemoPlugin")
 	{
 	}
 

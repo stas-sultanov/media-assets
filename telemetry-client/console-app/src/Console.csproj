@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<LangVersion>latest</LangVersion>
+		<OutputType>Exe</OutputType>
+		<TargetFramework>net462</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Reference Include="Azure.Monitor.Telemetry">
+			<HintPath>..\..\..\azure-monitor-telemetry\src\bin\Release\net462\Azure.Monitor.Telemetry.dll</HintPath>
+		</Reference>
+		<Reference Include="System.Net.Http" />
+	</ItemGroup>
+
+</Project>
