@@ -47,7 +47,6 @@ internal sealed class PowerPlatformEnvironmentMock
 					}
 				},
 				{
-					""Authenticate"": false,
 					""IngestionEndpoint"": ""https://dc.in.applicationinsights.azure.com/"",
 					""InstrumentationKey"": ""33333333-3333-3333-3333-333333333333""
 				}

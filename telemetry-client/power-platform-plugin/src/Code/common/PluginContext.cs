@@ -4,7 +4,6 @@
 namespace Stas.PowerPlatformDemo.Plugins;
 
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
@@ -109,21 +108,28 @@ public sealed class PluginContext<PluginConfigurationType> : IDisposable
 		OrganizationService_InitiatingUser = CreateOrganizationService(OrganizationServiceFactory, PluginExecutionContext.InitiatingUserId);
 		OrganizationService_User = CreateOrganizationService(OrganizationServiceFactory, PluginExecutionContext.UserId);
 
-		// retrieve and deserialize configuration
+		// retrieve configuration
 		var configurationAsString = OrganizationService_User.GetEnvironmentVariable(environmentVariablesConfigName)
 			?? throw new InvalidPluginExecutionException($"Environment variable '{environmentVariablesConfigName}' is not found.");
+
+		// deserialize configuration
 		Configuration = JsonSerializer.Deserialize<PluginConfigurationType>(configurationAsString)
 			?? throw new InvalidPluginExecutionException($"Cannot deserialize configuration from the environment variable '{environmentVariablesConfigName}'.");
 
-		// initialize telemetry client
+		// initialize HTTP client for telemetry publishers
 		telemetryPublisherHttpClient = new HttpClient();
 		var telemetryClientConfiguration = Configuration.TelemetryClient;
 
-		// form telemetry tags
-		var tags = new List<KeyValuePair<String, String>>(telemetryClientConfiguration.Tags?.ToArray() ?? [])
+		// Create telemetry tags
+		// the Power Platfrom plugins are designed to handle only one operation type
+		// thus we can set OperationId and OperationParentId tags here
+		var tags = new TelemetryTags(telemetryClientConfiguration.Tags)
 		{
-			new(TelemetryTagKeys.CloudRole, "PowerPlatform"),
-			new(TelemetryTagKeys.CloudRoleInstance, Environment.MachineName)
+			CloudRole = "PowerPlatform",
+			CloudRoleInstance = Environment.MachineName,
+
+			OperationId = PluginExecutionContext.CorrelationId.ToString(),
+			OperationParentId = PluginExecutionContext.OperationId.ToString()
 		};
 
 		// create telemetry client
@@ -134,14 +140,6 @@ public sealed class PluginContext<PluginConfigurationType> : IDisposable
 			GetGetAccessToken,
 			tags
 		);
-
-		// Set telemetry operation details
-		TelemetryClient.Operation = new TelemetryOperation
-		{
-			Id = PluginExecutionContext.CorrelationId.ToString(),
-			Name = PluginExecutionContext.MessageName,
-			ParentId = PluginExecutionContext.OperationId.ToString()
-		};
 	}
 
 	#endregion

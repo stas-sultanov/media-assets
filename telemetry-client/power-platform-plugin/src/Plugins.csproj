@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<AnalysisLevel>latest-all</AnalysisLevel>
 		<AssemblyName>Stas.PowerPlatformDemo.Plugins</AssemblyName>
-		<AssemblyVersion>1.0.0</AssemblyVersion>
+		<AssemblyVersion>1.0.1</AssemblyVersion>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<FileVersion>$(AssemblyVersion)</FileVersion>
@@ -26,26 +26,19 @@
 		<PackageReference Include="Stas.Azure.Monitor.Telemetry" Version="1.*" />
 	</ItemGroup>
 
-	<ItemGroup>
-			<Reference Include="System.Net.Http" />
-	</ItemGroup>
-
 	<Choose>
 		<!--Add properties, items and references if packing-->
 		<When Condition=" '$(_IsPacking)' == 'true' ">
 			<PropertyGroup>
 				<Authors>Stas Sultanov</Authors>
-				<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
 				<Copyright>Copyright © Stas Sultanov</Copyright>
 				<Description>A Power Platform Plugin with Telemetry Client demonstration.</Description>
 				<EmbedUntrackedSources>true</EmbedUntrackedSources>
 				<EnablePackageValidation>true</EnablePackageValidation>
-				<IncludeSymbols>true</IncludeSymbols>
 				<PackageReadmeFile>package.md</PackageReadmeFile>
 				<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 				<PackageTags>PowerPlatform;Demo;</PackageTags>
 				<Product>Demo</Product>
-				<RepositoryType>git</RepositoryType>
 				<Title>Power Platform Plugin Telemetry Client Demo</Title>
 				<Version>$(AssemblyVersion)</Version>
 			</PropertyGroup>

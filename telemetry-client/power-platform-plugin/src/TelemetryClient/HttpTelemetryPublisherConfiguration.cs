@@ -4,17 +4,16 @@
 namespace Azure.Monitor.Telemetry;
 
 using System;
-using System.Collections.Generic;
 
 /// <summary>
-/// Represents the configuration settings for a <see cref="TelemetryPublisher"/>.
+/// Represents the configuration settings for a <see cref="HttpTelemetryPublisher"/>.
 /// </summary>
-public sealed class TelemetryPublisherConfiguration
+public sealed class HttpTelemetryPublisherConfiguration
 {
 	/// <summary>
 	/// The flag that indicates whether authentication is required.
 	/// </summary>
-	public required Boolean Authenticate { get; init; }
+	public Boolean Authenticate { get; init; }
 
 	/// <summary>
 	/// The URI of the ingestion endpoint used for sending telemetry data.
@@ -33,9 +32,4 @@ public sealed class TelemetryPublisherConfiguration
 	/// If not specified, the default managed identity will be used.
 	/// </remarks>
 	public Guid? ManagedIdentityId { get; init; }
-
-	/// <summary>
-	/// The optional key-value pairs of tags to include with telemetry data.
-	/// </summary>
-	public IReadOnlyDictionary<String, String>? Tags { get; init; }
 }

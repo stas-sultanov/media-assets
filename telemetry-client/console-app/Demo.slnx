@@ -1,0 +1,7 @@
+<Solution>
+	<Folder Name="/Solution Items/" Id="8ec462fd-d22e-90a8-e5ce-7e832ba40c5d">
+		<File Path="../.editorconfig" />
+		<File Path="readme.md" />
+	</Folder>
+	<Project Path="src/app.csproj" Id="62705f58-c379-6282-03e5-f00156795272" />
+</Solution>

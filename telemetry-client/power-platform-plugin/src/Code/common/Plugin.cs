@@ -61,7 +61,7 @@ public abstract partial class Plugin<PluginConfigurationType>
 		// we use Guid to align with the request id format used by the Power Platform
 		var requestId = Guid.NewGuid().ToString();
 
-		// begin operation scope
+		// begin telmetry request scope
 		// all subsequent telemetry events are associated with the execute request
 		pluginContext.TelemetryClient.ActivityScopeBegin(requestId, out var operation);
 
@@ -104,21 +104,37 @@ public abstract partial class Plugin<PluginConfigurationType>
 
 			// create tags
 			// the tags will be included into the Request telemetry
-			var tags = new[]
+			var requestTelemetryTags = new KeyValuePair<String, String>[]
 			{
-				// we use the user id to understand who made the call
-				new KeyValuePair<String, String>
+				// OerationNam can be attached to request telemetry only
+				// no need to add it to each telemetry
+				new (TelemetryTagKeys.OperationName, pluginContext.PluginExecutionContext.MessageName),
+
+				// we use the user id to track the user who made the call
+				// use of Entra User Id allows to track user across all components of an IT solution
+				new
 				(
 					TelemetryTagKeys.UserAuthUserId,
 					pluginContext.PluginExecutionContext.InitiatingUserAzureActiveDirectoryObjectId.ToString()
 				)
 			};
 
+			// we need provide an URI to identify the request, we may use the plugin name
+			var requestUri = new Uri($"plugin:run");
 			var responseCode = success ? "0" : "1";
 
 			// track request telemetry
-			// we need provide an URI to identify the request, we may use the plugin name
-			pluginContext.TelemetryClient.TrackRequest(startTime, duration, requestId, new Uri($"plugin:run"), responseCode, success, nameof(Execute), tags: tags);
+			pluginContext.TelemetryClient.TrackRequest
+			(
+				startTime,
+				duration,
+				requestId,
+				requestUri,
+				responseCode,
+				success,
+				nameof(Execute),
+				tags: requestTelemetryTags
+			);
 
 			// publish all collected telemetry
 			pluginContext.TelemetryClient.PublishAsync().Wait();

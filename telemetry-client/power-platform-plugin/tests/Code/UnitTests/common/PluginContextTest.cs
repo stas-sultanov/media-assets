@@ -16,6 +16,7 @@ using Stas.PowerPlatformDemo.Plugins;
 /// <summary>
 /// Unit tests for the <see cref="PluginContext{PluginConfigurationType}"/> class.
 /// </summary>
+[TestCategory("UnitTests")]
 [TestClass]
 public sealed class PluginContextTest
 {
@@ -26,15 +27,15 @@ public sealed class PluginContextTest
 	{
 		var environmentMock = new PowerPlatformEnvironmentMock();
 
-		var serviceCollection = new PluginContext<PluginConfiguration>(environmentMock!.mock_ServiceProvider.Object, PowerPlatformEnvironmentMock.configurationKey);
+		var pluginContext = new PluginContext<PluginConfiguration>(environmentMock!.mock_ServiceProvider.Object, PowerPlatformEnvironmentMock.configurationKey);
 
-		Assert.AreEqual(environmentMock.mock_Logger.Object, serviceCollection.Logger);
-		Assert.AreEqual(environmentMock.mock_ManagedIdentityService.Object, serviceCollection.ManagedIdentityService);
-		Assert.AreEqual(environmentMock.mock_OrganizationServiceFactory.Object, serviceCollection.OrganizationServiceFactory);
-		Assert.AreEqual(environmentMock.mock_PluginExecutionContext.Object, serviceCollection.PluginExecutionContext);
-		Assert.AreEqual(environmentMock.mock_TracingService.Object, serviceCollection.TracingService);
-		Assert.AreEqual(environmentMock.mock_OrganizationService_InitiatingUser.Object, serviceCollection.OrganizationService_InitiatingUser);
-		Assert.AreEqual(environmentMock.mock_OrganizationService_User.Object, serviceCollection.OrganizationService_User);
+		Assert.AreEqual(environmentMock.mock_Logger.Object, pluginContext.Logger);
+		Assert.AreEqual(environmentMock.mock_ManagedIdentityService.Object, pluginContext.ManagedIdentityService);
+		Assert.AreEqual(environmentMock.mock_OrganizationServiceFactory.Object, pluginContext.OrganizationServiceFactory);
+		Assert.AreEqual(environmentMock.mock_PluginExecutionContext.Object, pluginContext.PluginExecutionContext);
+		Assert.AreEqual(environmentMock.mock_TracingService.Object, pluginContext.TracingService);
+		Assert.AreEqual(environmentMock.mock_OrganizationService_InitiatingUser.Object, pluginContext.OrganizationService_InitiatingUser);
+		Assert.AreEqual(environmentMock.mock_OrganizationService_User.Object, pluginContext.OrganizationService_User);
 	}
 
 	[TestMethod]
@@ -46,7 +47,10 @@ public sealed class PluginContextTest
 		_ = environmentMock.mock_ServiceProvider.Setup(sp => sp.GetService(typeof(ILogger))).Returns(null);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-		_ = Assert.ThrowsExactly<InvalidPluginExecutionException>(() => new PluginContext<PluginConfiguration>(environmentMock.mock_ServiceProvider.Object, String.Empty));
+		_ = Assert.ThrowsExactly<InvalidPluginExecutionException>
+		(
+			() => _ = new PluginContext<PluginConfiguration>(environmentMock.mock_ServiceProvider.Object, String.Empty)
+		);
 	}
 
 	[TestMethod]
@@ -60,7 +64,10 @@ public sealed class PluginContextTest
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
-		_ = Assert.ThrowsExactly<InvalidPluginExecutionException>(() => new PluginContext<PluginConfiguration>(environmentMock.mock_ServiceProvider.Object, String.Empty));
+		_ = Assert.ThrowsExactly<InvalidPluginExecutionException>
+		(
+			() => _ = new PluginContext<PluginConfiguration>(environmentMock.mock_ServiceProvider.Object, String.Empty)
+		);
 	}
 
 	#endregion

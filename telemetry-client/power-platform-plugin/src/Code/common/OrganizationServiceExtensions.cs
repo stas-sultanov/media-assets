@@ -35,6 +35,8 @@ public static class OrganizationServiceExtensions
 
 	#endregion
 
+	#region Methods: Extensions
+
 	/// <summary>
 	/// Gets the environment variable with the specified name.
 	/// </summary>
@@ -78,4 +80,6 @@ public static class OrganizationServiceExtensions
 
 		return result;
 	}
+
+	#endregion
 }

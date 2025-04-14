@@ -14,10 +14,10 @@ public sealed class TelemetryClientConfiguration
 	/// <summary>
 	/// The list of configurations for telemetry publishers.
 	/// </summary>
-	public required IReadOnlyList<TelemetryPublisherConfiguration> Publishers { get; init; }
+	public required IReadOnlyList<HttpTelemetryPublisherConfiguration> Publishers { get; init; }
 
 	/// <summary>
 	/// The optional key-value pairs of tags to include with telemetry data.
 	/// </summary>
-	public IReadOnlyDictionary<String, String>? Tags { get; init; }
+	public required IReadOnlyDictionary<String, String> Tags { get; init; }
 }
