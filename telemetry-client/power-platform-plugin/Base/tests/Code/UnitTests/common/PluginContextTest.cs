@@ -1,7 +1,7 @@
 // Created by Stas Sultanov.
 // Copyright © Stas Sultanov.
 
-namespace Stas.PowerPlatformDemo.PluginsTests;
+namespace Stas.PowerPlatform.DemoTests;
 
 using System;
 
@@ -11,7 +11,7 @@ using Microsoft.Xrm.Sdk.PluginTelemetry;
 
 using Moq;
 
-using Stas.PowerPlatformDemo.Plugins;
+using Stas.PowerPlatform;
 
 /// <summary>
 /// Unit tests for the <see cref="PluginContext{PluginConfigurationType}"/> class.
@@ -27,7 +27,7 @@ public sealed class PluginContextTest
 	{
 		var environmentMock = new PowerPlatformEnvironmentMock();
 
-		var pluginContext = new PluginContext<PluginConfiguration>(environmentMock!.mock_ServiceProvider.Object, PowerPlatformEnvironmentMock.configurationKey);
+		var pluginContext = new PluginContext(environmentMock!.mock_ServiceProvider.Object, PowerPlatformEnvironmentMock.configurationKey);
 
 		Assert.AreEqual(environmentMock.mock_Logger.Object, pluginContext.Logger);
 		Assert.AreEqual(environmentMock.mock_ManagedIdentityService.Object, pluginContext.ManagedIdentityService);
@@ -49,7 +49,7 @@ public sealed class PluginContextTest
 
 		_ = Assert.ThrowsExactly<InvalidPluginExecutionException>
 		(
-			() => _ = new PluginContext<PluginConfiguration>(environmentMock.mock_ServiceProvider.Object, String.Empty)
+			() => _ = new PluginContext(environmentMock.mock_ServiceProvider.Object, String.Empty)
 		);
 	}
 
@@ -66,7 +66,7 @@ public sealed class PluginContextTest
 
 		_ = Assert.ThrowsExactly<InvalidPluginExecutionException>
 		(
-			() => _ = new PluginContext<PluginConfiguration>(environmentMock.mock_ServiceProvider.Object, String.Empty)
+			() => _ = new PluginContext(environmentMock.mock_ServiceProvider.Object, String.Empty)
 		);
 	}
 

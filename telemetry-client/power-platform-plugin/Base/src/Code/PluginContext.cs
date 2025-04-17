@@ -1,7 +1,7 @@
 ﻿// Created by Stas Sultanov.
 // Copyright © Stas Sultanov.
 
-namespace Stas.PowerPlatformDemo.Plugins;
+namespace Stas.PowerPlatform;
 
 using System;
 using System.Net.Http;
@@ -21,9 +21,10 @@ using Microsoft.Xrm.Sdk.PluginTelemetry;
 /// Provides a collection of essential services for plugin execution in the Power Platform environment.
 /// This class encapsulates common services and contexts required for plugin operations.
 /// </summary>
-public sealed class PluginContext<PluginConfigurationType> : IDisposable
-	where PluginConfigurationType : PluginConfiguration
+public class PluginContext : IDisposable
 {
+	const String TelemetryClientConfigurationKeyName = "TelemetryClient";
+
 	#region Static Fields
 
 	private static readonly String[] telemetryPublisherAuthorizationScopes = [HttpTelemetryPublisher.AuthorizationScope];
@@ -39,12 +40,89 @@ public sealed class PluginContext<PluginConfigurationType> : IDisposable
 
 	#endregion
 
+	#region Constructors
+
+	/// <summary>
+	/// Initializes a new instance of the <see cref="PluginContext"/> class.
+	/// </summary>
+	/// <param name="serviceProvider">The service provider.</param>
+	/// <param name="environmentVariablesConfigName">The name of the environment variable containing configuration settings.</param>
+	public PluginContext
+	(
+		IServiceProvider serviceProvider,
+		String environmentVariablesConfigName
+	)
+	{
+		// retrieve required services
+		Logger = GetService<ILogger>(serviceProvider);
+		OrganizationServiceFactory = GetService<IOrganizationServiceFactory>(serviceProvider);
+		PluginExecutionContext = GetService<IPluginExecutionContext7>(serviceProvider);
+		ManagedIdentityService = GetService<IManagedIdentityService>(serviceProvider);
+		TracingService = GetService<ITracingService>(serviceProvider);
+
+		// create organization services
+		OrganizationService_InitiatingUser = CreateOrganizationService(OrganizationServiceFactory, PluginExecutionContext.InitiatingUserId);
+		OrganizationService_User = CreateOrganizationService(OrganizationServiceFactory, PluginExecutionContext.UserId);
+
+		// retrieve configuration
+		var configurationAsString = OrganizationService_User.GetEnvironmentVariable(environmentVariablesConfigName)
+			?? throw new InvalidPluginExecutionException($"Environment variable '{environmentVariablesConfigName}' is not found.");
+
+		// deserialize configuration
+		using var config = JsonSerializer.Deserialize<JsonDocument>(configurationAsString);
+
+		if (config == null)
+		{
+			throw new InvalidPluginExecutionException($"Cannot deserialize configuration from the environment variable '{environmentVariablesConfigName}'.");
+		}
+
+		Configuration = config.RootElement;
+
+		if (!Configuration.TryGetProperty(TelemetryClientConfigurationKeyName, out var telemetryClientConfigurationAsJsonElement))
+		{
+			throw new InvalidPluginExecutionException($"Cannot get proptery from configuration '{TelemetryClientConfigurationKeyName}'.");
+		}
+
+		var telemetryClientConfiguration = telemetryClientConfigurationAsJsonElement.Deserialize<TelemetryClientConfiguration>();
+
+		if (telemetryClientConfiguration == null)
+		{
+			throw new InvalidPluginExecutionException($"Cannot deserialize configuration 'TelemetryClient'.");
+		}
+
+		// initialize HTTP client for telemetry publishers
+		telemetryPublisherHttpClient = new HttpClient();
+
+		// Create telemetry tags
+		// the Power Platform plugins are designed to handle only one operation type
+		// thus we can set OperationId and OperationParentId tags here
+		var tags = new TelemetryTags(telemetryClientConfiguration.Tags)
+		{
+			CloudRole = "PowerPlatform",
+			CloudRoleInstance = Environment.MachineName,
+
+			OperationId = PluginExecutionContext.CorrelationId.ToString(),
+			OperationParentId = PluginExecutionContext.OperationId.ToString()
+		};
+
+		// create telemetry client
+		TelemetryClient = TelemetryClientFactory.CreateTelemetryClient
+		(
+			telemetryClientConfiguration.Publishers,
+			telemetryPublisherHttpClient,
+			GetGetAccessToken,
+			tags
+		);
+	}
+
+	#endregion
+
 	#region Properties
 
 	/// <summary>
 	/// The plugin configuration settings.
 	/// </summary>
-	public PluginConfigurationType Configuration { get; }
+	protected JsonElement Configuration { get; }
 
 	/// <summary>
 	/// The platform logger.
@@ -86,61 +164,10 @@ public sealed class PluginContext<PluginConfigurationType> : IDisposable
 	/// </summary>
 	public ITracingService TracingService { get; }
 
-	#endregion
-
-	#region Constructors
-
 	/// <summary>
-	/// Initializes a new instance of the <see cref="PluginContext"/> class.
+	/// A flag that indicates whether instance is disposed.
 	/// </summary>
-	/// <param name="serviceProvider">The service provider.</param>
-	/// <param name="environmentVariablesConfigName">The name of the environment variable containing configuration settings.</param>
-	public PluginContext(IServiceProvider serviceProvider, String environmentVariablesConfigName)
-	{
-		// retrieve required services
-		Logger = GetService<ILogger>(serviceProvider);
-		OrganizationServiceFactory = GetService<IOrganizationServiceFactory>(serviceProvider);
-		PluginExecutionContext = GetService<IPluginExecutionContext7>(serviceProvider);
-		ManagedIdentityService = GetService<IManagedIdentityService>(serviceProvider);
-		TracingService = GetService<ITracingService>(serviceProvider);
-
-		// create organization services
-		OrganizationService_InitiatingUser = CreateOrganizationService(OrganizationServiceFactory, PluginExecutionContext.InitiatingUserId);
-		OrganizationService_User = CreateOrganizationService(OrganizationServiceFactory, PluginExecutionContext.UserId);
-
-		// retrieve configuration
-		var configurationAsString = OrganizationService_User.GetEnvironmentVariable(environmentVariablesConfigName)
-			?? throw new InvalidPluginExecutionException($"Environment variable '{environmentVariablesConfigName}' is not found.");
-
-		// deserialize configuration
-		Configuration = JsonSerializer.Deserialize<PluginConfigurationType>(configurationAsString)
-			?? throw new InvalidPluginExecutionException($"Cannot deserialize configuration from the environment variable '{environmentVariablesConfigName}'.");
-
-		// initialize HTTP client for telemetry publishers
-		telemetryPublisherHttpClient = new HttpClient();
-		var telemetryClientConfiguration = Configuration.TelemetryClient;
-
-		// Create telemetry tags
-		// the Power Platfrom plugins are designed to handle only one operation type
-		// thus we can set OperationId and OperationParentId tags here
-		var tags = new TelemetryTags(telemetryClientConfiguration.Tags)
-		{
-			CloudRole = "PowerPlatform",
-			CloudRoleInstance = Environment.MachineName,
-
-			OperationId = PluginExecutionContext.CorrelationId.ToString(),
-			OperationParentId = PluginExecutionContext.OperationId.ToString()
-		};
-
-		// create telemetry client
-		TelemetryClient = TelemetryClientFactory.CreateTelemetryClient
-		(
-			telemetryClientConfiguration.Publishers,
-			telemetryPublisherHttpClient,
-			GetGetAccessToken,
-			tags
-		);
-	}
+	public Boolean IsDisposed { get; private set; }
 
 	#endregion
 
@@ -149,7 +176,11 @@ public sealed class PluginContext<PluginConfigurationType> : IDisposable
 	/// <inheritdoc/>
 	public void Dispose()
 	{
-		telemetryPublisherHttpClient?.Dispose();
+		// Release the resources
+		Dispose(true);
+
+		// Request system not to call the finalize method for a specified object
+		GC.SuppressFinalize(this);
 	}
 
 	#endregion
@@ -164,7 +195,11 @@ public sealed class PluginContext<PluginConfigurationType> : IDisposable
 	/// <returns>An instance of <see cref="IOrganizationService"/> for the specified user.</returns>
 	/// <exception cref="InvalidPluginExecutionException">Thrown if the organization service cannot be created.</exception>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private static IOrganizationService CreateOrganizationService(IOrganizationServiceFactory organizationServiceFactory, Guid userId)
+	private static IOrganizationService CreateOrganizationService
+	(
+		IOrganizationServiceFactory organizationServiceFactory,
+		Guid userId
+	)
 	{
 		var result = organizationServiceFactory.CreateOrganizationService(userId) ?? throw new InvalidPluginExecutionException($"Cannot create instance of the OrganizationService for userId: {userId}.");
 
@@ -179,7 +214,10 @@ public sealed class PluginContext<PluginConfigurationType> : IDisposable
 	/// <returns>An instance of type <typeparamref name="T"/>.</returns>
 	/// <exception cref="InvalidPluginExecutionException">Thrown if the requested service cannot be retrieved.</exception>
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private static T GetService<T>(IServiceProvider serviceProvider)
+	private static T GetService<T>
+	(
+		IServiceProvider serviceProvider
+	)
 	{
 		var result = serviceProvider.Get<T>() ?? throw new InvalidPluginExecutionException($"Cannot get instance of {typeof(T).FullName} type from the {nameof(serviceProvider)}.");
 
@@ -191,7 +229,10 @@ public sealed class PluginContext<PluginConfigurationType> : IDisposable
 	/// </summary>
 	/// <param name="managedIdentityId">The ID of the managed identity.</param>
 	/// <returns>A delegate that retrieves an access token.</returns>
-	private Func<CancellationToken, Task<BearerToken>> GetGetAccessToken(Guid? managedIdentityId)
+	private Func<CancellationToken, Task<BearerToken>> GetGetAccessToken
+	(
+		Guid? managedIdentityId
+	)
 	{
 		// Default token expiration is 24 hours
 		var tokenExpiresOn = DateTime.UtcNow.AddHours(24);
@@ -210,6 +251,36 @@ public sealed class PluginContext<PluginConfigurationType> : IDisposable
 		}
 
 		return getAccessToken;
+	}
+
+	#endregion
+
+	#region Methods: Protected
+
+	/// <summary>
+	/// Releases resources associated with the instance.
+	/// </summary>
+	/// <param name="fromDispose">Value indicating whether method was called from the <see cref="Dispose()" /> method.</param>
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	protected virtual void Dispose
+	(
+		Boolean fromDispose
+	)
+	{
+		// Check if object is disposed already
+		if (IsDisposed)
+		{
+			return;
+		}
+
+		// Check if the call is from Dispose() method
+		if (fromDispose)
+		{
+			telemetryPublisherHttpClient.Dispose();
+		}
+
+		// Set disposed
+		IsDisposed = true;
 	}
 
 	#endregion

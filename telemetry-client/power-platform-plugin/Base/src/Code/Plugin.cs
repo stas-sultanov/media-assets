@@ -1,7 +1,7 @@
 // Created by Stas Sultanov.
 // Copyright © Stas Sultanov.
 
-namespace Stas.PowerPlatformDemo.Plugins;
+namespace Stas.PowerPlatform;
 
 using System;
 using System.Collections.Generic;
@@ -15,13 +15,9 @@ using Microsoft.Xrm.Sdk.PluginTelemetry;
 /// <summary>
 /// Represents an abstract base class for plugins.
 /// </summary>
-/// <param name="configurationEnvironmentVariableKeyName">The name of the key of environment variable that contains configuration of the plugin.</param>
-public abstract partial class Plugin<PluginConfigurationType>
-(
-	String configurationEnvironmentVariableKeyName
-)
+public abstract class Plugin<PluginContextType>()
 	: IPlugin
-	where PluginConfigurationType : PluginConfiguration
+	where PluginContextType : PluginContext
 {
 	#region Constants
 
@@ -32,19 +28,13 @@ public abstract partial class Plugin<PluginConfigurationType>
 
 	#endregion
 
-	#region Fields
-
-	/// <summary>
-	/// The name of the key of environment variable that contains configuration of the plugin
-	/// </summary>
-	private readonly String configurationEnvironmentVariableKeyName = configurationEnvironmentVariableKeyName;
-
-	#endregion
-
 	#region Methods: Implementation of IPlugin
 
 	/// <inheritdoc/>
-	public void Execute(IServiceProvider serviceProvider)
+	public void Execute
+	(
+		IServiceProvider serviceProvider
+	)
 	{
 		// get start timestamp
 		// we use the stopwatch to get the start time in ticks, this is used to calculate the duration of the request
@@ -55,13 +45,13 @@ public abstract partial class Plugin<PluginConfigurationType>
 		var startTime = DateTime.UtcNow;
 
 		// create plugin context
-		using var pluginContext = new PluginContext<PluginConfigurationType>(serviceProvider, configurationEnvironmentVariableKeyName);
+		using var pluginContext = InitializeContext(serviceProvider);
 
 		// generate request id
 		// we use Guid to align with the request id format used by the Power Platform
 		var requestId = Guid.NewGuid().ToString();
 
-		// begin telmetry request scope
+		// begin telemetry request scope
 		// all subsequent telemetry events are associated with the execute request
 		pluginContext.TelemetryClient.ActivityScopeBegin(requestId, out var operation);
 
@@ -106,7 +96,7 @@ public abstract partial class Plugin<PluginConfigurationType>
 			// the tags will be included into the Request telemetry
 			var requestTelemetryTags = new KeyValuePair<String, String>[]
 			{
-				// OerationNam can be attached to request telemetry only
+				// OperationName can be attached to request telemetry only
 				// no need to add it to each telemetry
 				new (TelemetryTagKeys.OperationName, pluginContext.PluginExecutionContext.MessageName),
 
@@ -145,12 +135,17 @@ public abstract partial class Plugin<PluginConfigurationType>
 
 	#region Methods: Abstract
 
+	protected abstract PluginContextType InitializeContext(IServiceProvider serviceProvider);
+
 	/// <summary>
 	/// Executes the plugin logic within the provided context.
 	/// </summary>
 	/// <param name="pluginContext">The context.</param>
 	/// <exception cref="InvalidPluginExecutionException">Thrown when an error occurs during the execution.</exception>
-	protected abstract void Execute(PluginContext<PluginConfigurationType> pluginContext);
+	protected abstract void Execute
+	(
+		PluginContext pluginContext
+	);
 
 	#endregion
 }

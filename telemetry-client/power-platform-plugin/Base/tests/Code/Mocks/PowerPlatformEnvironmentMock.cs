@@ -1,7 +1,7 @@
 ﻿// Created by Stas Sultanov.
 // Copyright © Stas Sultanov.
 
-namespace Stas.PowerPlatformDemo.PluginsTests;
+namespace Stas.PowerPlatform.DemoTests;
 
 using System;
 

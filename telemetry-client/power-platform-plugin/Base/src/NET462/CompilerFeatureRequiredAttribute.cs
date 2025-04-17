@@ -15,7 +15,7 @@ using System.Diagnostics.CodeAnalysis;
 [AttributeUsage(AttributeTargets.All, AllowMultiple = true, Inherited = false)]
 [DebuggerNonUserCode]
 [ExcludeFromCodeCoverage]
-internal sealed class CompilerFeatureRequiredAttribute(String featureName) : Attribute
+public sealed class CompilerFeatureRequiredAttribute(String featureName) : Attribute
 {
 	/// <summary>
 	/// The name of the compiler feature.

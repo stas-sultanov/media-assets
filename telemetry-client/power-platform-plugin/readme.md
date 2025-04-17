@@ -1,6 +1,6 @@
 # Power Platform Plugin Demo
 
-This folder contains a sources of sample Microsoft Power Platform Plugin that demonstrates how to use the [Azure.Monitor.Telemetry](https://github.com/stas-sultanov/azure-monitor-telemetry) library to track and publish telemetry data.
+This folder contains sources of sample Microsoft Power Platform Plugin that demonstrates how to use the [Azure.Monitor.Telemetry](https://github.com/stas-sultanov/azure-monitor-telemetry) library to track and publish telemetry data.
 
 The demo is created for people with solid expertise in creating plugins for Microsoft Power Platform.
 
@@ -63,7 +63,7 @@ The schema is pretty simple and should be clear to understand how to specify req
 
 ### 4. The Code
 
-Adjust the code of [DemoPlugin](/telemetry-client/power-platform-plugin/src/Code/DemoPlugin.cs) constructor to use name of the environment variable that holds the configuration from [step 3](#3-environment-variables).
+Adjust the code of [DemoPlugin](/telemetry-client/power-platform-plugin/Demo/src/Code/DemoPlugin.cs) class, to use name of the environment variable that holds the configuration from [step 3](#3-environment-variables).
 
 ## 📌 Notes
 

@@ -1,7 +1,7 @@
 // Created by Stas Sultanov.
 // Copyright © Stas Sultanov.
 
-namespace Stas.PowerPlatformDemo.Plugins;
+namespace Stas.PowerPlatform;
 
 using System;
 
@@ -35,7 +35,7 @@ public static class OrganizationServiceExtensions
 
 	#endregion
 
-	#region Methods: Extensions
+	#region Methods
 
 	/// <summary>
 	/// Gets the environment variable with the specified name.

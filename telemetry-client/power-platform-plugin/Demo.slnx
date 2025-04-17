@@ -1,8 +1,13 @@
 <Solution>
-	<Folder Name="/Solution Items/">
+	<Folder Name="/Files/">
 		<File Path="../.editorconfig" />
 		<File Path="readme.md" />
 	</Folder>
-	<Project Path="src/Plugins.csproj" />
-	<Project Path="tests/PluginsTests.csproj" />
+	<Folder Name="/Base/">
+		<Project Path="Base/src/Base.csproj" />
+		<Project Path="Base/tests/BaseTests.csproj" />
+	</Folder>
+	<Folder Name="/Demo/" >
+		<Project Path="Demo/src/Plugins.csproj" />
+	</Folder>
 </Solution>

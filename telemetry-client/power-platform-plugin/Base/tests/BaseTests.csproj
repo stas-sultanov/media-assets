@@ -33,7 +33,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\src\Plugins.csproj" />
+	  <ProjectReference Include="..\src\Base.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -17,6 +17,6 @@ using System.Diagnostics.CodeAnalysis;
 [DebuggerNonUserCode]
 [EditorBrowsable(EditorBrowsableState.Never)]
 [ExcludeFromCodeCoverage]
-internal sealed class RequiredMemberAttribute : Attribute
+public sealed class RequiredMemberAttribute : Attribute
 {
 }

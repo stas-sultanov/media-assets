@@ -16,6 +16,6 @@ using System.Diagnostics.CodeAnalysis;
 [DebuggerNonUserCode]
 [EditorBrowsable(EditorBrowsableState.Never)]
 [ExcludeFromCodeCoverage]
-internal static class IsExternalInit
+public static class IsExternalInit
 {
 }
