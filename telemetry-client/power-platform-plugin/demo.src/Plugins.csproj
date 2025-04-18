@@ -2,7 +2,6 @@
 	<PropertyGroup>
 		<AnalysisLevel>latest-all</AnalysisLevel>
 		<AssemblyName>Stas.PowerPlatformDemo.Plugins</AssemblyName>
-		<AssemblyVersion>1.0.1</AssemblyVersion>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
 		<FileVersion>$(AssemblyVersion)</FileVersion>
@@ -26,8 +25,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\Base\src\Base.csproj" />
+	  <ProjectReference Include="..\base.src\Base.csproj" />
 	</ItemGroup>
+
+	<Import Project="$(PowerAppsTargetsPath)\Microsoft.PowerApps.VisualStudio.Plugin.targets" Condition="Exists('$(PowerAppsTargetsPath)\Microsoft.PowerApps.VisualStudio.Plugin.targets')" />
 
 	<Choose>
 		<!--Add properties, items and references if packing-->
@@ -50,6 +51,4 @@
 			</ItemGroup>
 		</When>
 	</Choose>
-
-	<Import Project="$(PowerAppsTargetsPath)\Microsoft.PowerApps.VisualStudio.Plugin.targets" Condition="Exists('$(PowerAppsTargetsPath)\Microsoft.PowerApps.VisualStudio.Plugin.targets')" />
 </Project>

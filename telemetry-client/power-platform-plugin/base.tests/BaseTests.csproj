@@ -2,12 +2,11 @@
 
 	<PropertyGroup>
 		<AnalysisLevel>latest-recomended</AnalysisLevel>
-		<AssemblyName>Stas.PowerPlatformDemo.PluginsTests</AssemblyName>
+		<AssemblyName>Stas.PowerPlatformTests</AssemblyName>
 		<EnableMSTestRunner>true</EnableMSTestRunner>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
-		<EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 		<FileVersion>$(AssemblyVersion)</FileVersion>
-		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
@@ -33,7 +32,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\src\Base.csproj" />
+	  <ProjectReference Include="..\base.src\Base.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,7 +1,7 @@
-﻿// Created by Stas Sultanov.
-// Copyright © Stas Sultanov.
+﻿// Authored by Stas Sultanov
+// Copyright © Stas Sultanov
 
-namespace Stas.PowerPlatform.DemoTests;
+namespace Stas.PowerPlatformTests;
 
 using System;
 
@@ -19,7 +19,7 @@ using Moq;
 /// </summary>
 internal sealed class PowerPlatformEnvironmentMock
 {
-	#region constants
+	#region Constants
 
 	internal const String configurationAsString = @"
 	{
@@ -31,31 +31,18 @@ internal sealed class PowerPlatformEnvironmentMock
 					""Authenticate"": true,
 					""IngestionEndpoint"": ""https://dc.in.applicationinsights.azure.com/"",
 					""InstrumentationKey"": ""11111111-1111-1111-1111-111111111111"",
-					""ManagedIdentityId"": ""b2719b6e-8f3b-4c9b-9a2e-4f5b5e5f5e5f"",
-					""Tags"":
-					{
-						""Environment"": ""Production"",
-						""Region"": ""US""
-					}
+					""ManagedIdentityId"": ""b2719b6e-8f3b-4c9b-9a2e-4f5b5e5f5e5f""
 				},
 				{
 					""Authenticate"": true,
 					""IngestionEndpoint"": ""https://dc.in.applicationinsights.azure.com/"",
-					""InstrumentationKey"": ""22222222-2222-2222-2222-222222222222"",
-					""Tags"":
-					{
-					}
+					""InstrumentationKey"": ""22222222-2222-2222-2222-222222222222""
 				},
 				{
 					""IngestionEndpoint"": ""https://dc.in.applicationinsights.azure.com/"",
 					""InstrumentationKey"": ""33333333-3333-3333-3333-333333333333""
 				}
-			],
-			""Tags"":
-			{
-				""Application"": ""MyApp"",
-				""Version"": ""1.0.0""
-			}
+			]
 		}
 	}";
 
@@ -65,7 +52,7 @@ internal sealed class PowerPlatformEnvironmentMock
 
 	#region Data
 
-	internal readonly String managedIdentityTokenValue = "bebbebeebeb";
+	internal readonly String managedIdentityTokenValue = "BH5BHYB45BU9G5B9GBUG54BUB59GU54GBU9G4BUBC3B394BUC43BUC43B9UB943CBUC";
 
 	internal readonly Guid contextInitiatingUserId = Guid.NewGuid();
 	internal readonly Guid contextUserId = Guid.NewGuid();

@@ -1,5 +1,5 @@
-// Created by Stas Sultanov.
-// Copyright © Stas Sultanov.
+// Authored by Stas Sultanov
+// Copyright © Stas Sultanov
 
 namespace Stas.PowerPlatform;
 
@@ -24,7 +24,7 @@ public abstract class Plugin<PluginContextType>()
 	/// <summary>
 	/// Error message for work execution failures.
 	/// </summary>
-	private const String workExecutionErrorMessage = @"Error during work execution.";
+	private const String workExecutionErrorMessage = "Error during work execution.";
 
 	#endregion
 
@@ -135,16 +135,25 @@ public abstract class Plugin<PluginContextType>()
 
 	#region Methods: Abstract
 
-	protected abstract PluginContextType InitializeContext(IServiceProvider serviceProvider);
+	/// <summary>
+	/// Initializes a context.
+	/// </summary>
+	/// <remarks>The method is required because of limitations of the .NET Generic new constraint.</remarks>
+	/// <param name="serviceProvider">The service provider.</param>
+	/// <returns>An instance of <typeparamref name="PluginContextType"/> type.</returns>
+	protected abstract PluginContextType InitializeContext
+	(
+		IServiceProvider serviceProvider
+	);
 
 	/// <summary>
 	/// Executes the plugin logic within the provided context.
 	/// </summary>
-	/// <param name="pluginContext">The context.</param>
+	/// <param name="context">The plugin context.</param>
 	/// <exception cref="InvalidPluginExecutionException">Thrown when an error occurs during the execution.</exception>
 	protected abstract void Execute
 	(
-		PluginContext pluginContext
+		PluginContextType context
 	);
 
 	#endregion

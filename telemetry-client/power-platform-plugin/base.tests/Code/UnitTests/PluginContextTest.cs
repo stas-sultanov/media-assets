@@ -1,7 +1,7 @@
-// Created by Stas Sultanov.
-// Copyright © Stas Sultanov.
+// Authored by Stas Sultanov
+// Copyright Â© Stas Sultanov
 
-namespace Stas.PowerPlatform.DemoTests;
+namespace Stas.PowerPlatformTests;
 
 using System;
 
@@ -14,7 +14,7 @@ using Moq;
 using Stas.PowerPlatform;
 
 /// <summary>
-/// Unit tests for the <see cref="PluginContext{PluginConfigurationType}"/> class.
+/// Unit tests for the <see cref="PluginContext"/> class.
 /// </summary>
 [TestCategory("UnitTests")]
 [TestClass]
@@ -43,9 +43,7 @@ public sealed class PluginContextTest
 	{
 		var environmentMock = new PowerPlatformEnvironmentMock();
 
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-		_ = environmentMock.mock_ServiceProvider.Setup(sp => sp.GetService(typeof(ILogger))).Returns(null);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+		_ = environmentMock.mock_ServiceProvider.Setup(sp => sp.GetService(typeof(ILogger))).Returns(null!);
 
 		_ = Assert.ThrowsExactly<InvalidPluginExecutionException>
 		(
@@ -58,11 +56,7 @@ public sealed class PluginContextTest
 	{
 		var environmentMock = new PowerPlatformEnvironmentMock();
 
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
-		_ = environmentMock.mock_OrganizationServiceFactory.Setup(factory => factory.CreateOrganizationService(It.IsAny<Guid>())).Returns((IOrganizationService) null);
-#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
+		_ = environmentMock.mock_OrganizationServiceFactory.Setup(factory => factory.CreateOrganizationService(It.IsAny<Guid>())).Returns((IOrganizationService) null!);
 
 		_ = Assert.ThrowsExactly<InvalidPluginExecutionException>
 		(

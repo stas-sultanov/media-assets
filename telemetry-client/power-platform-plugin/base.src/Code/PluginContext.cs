@@ -1,5 +1,5 @@
-﻿// Created by Stas Sultanov.
-// Copyright © Stas Sultanov.
+﻿// Authored by Stas Sultanov
+// Copyright © Stas Sultanov
 
 namespace Stas.PowerPlatform;
 
@@ -23,7 +23,7 @@ using Microsoft.Xrm.Sdk.PluginTelemetry;
 /// </summary>
 public class PluginContext : IDisposable
 {
-	const String TelemetryClientConfigurationKeyName = "TelemetryClient";
+	private const String telemetryClientConfigurationKey = "TelemetryClient";
 
 	#region Static Fields
 
@@ -32,6 +32,11 @@ public class PluginContext : IDisposable
 	#endregion
 
 	#region Fields
+
+	/// <summary>
+	/// The plugin configuration.
+	/// </summary>
+	private readonly JsonElement configuration;
 
 	/// <summary>
 	/// The <see cref="HttpClient"/> instance used by telemetry publishers.
@@ -65,30 +70,24 @@ public class PluginContext : IDisposable
 		OrganizationService_User = CreateOrganizationService(OrganizationServiceFactory, PluginExecutionContext.UserId);
 
 		// retrieve configuration
-		var configurationAsString = OrganizationService_User.GetEnvironmentVariable(environmentVariablesConfigName)
-			?? throw new InvalidPluginExecutionException($"Environment variable '{environmentVariablesConfigName}' is not found.");
+		if (!OrganizationService_User.TryGetEnvironmentVariable(environmentVariablesConfigName, out var configurationAsString))
+		{
+			throw new InvalidPluginExecutionException($"Environment variable '{environmentVariablesConfigName}' is not found.");
+		}
+
+		if (configurationAsString is null)
+		{
+			throw new InvalidPluginExecutionException($"Environment variable '{environmentVariablesConfigName}' is not empty.");
+		}
 
 		// deserialize configuration
-		using var config = JsonSerializer.Deserialize<JsonDocument>(configurationAsString);
+		using var config = JsonSerializer.Deserialize<JsonDocument>(configurationAsString)
+			?? throw new InvalidPluginExecutionException($"Environment variable '{environmentVariablesConfigName}' can not be deserialized.");
 
-		if (config == null)
-		{
-			throw new InvalidPluginExecutionException($"Cannot deserialize configuration from the environment variable '{environmentVariablesConfigName}'.");
-		}
+		configuration = config.RootElement;
 
-		Configuration = config.RootElement;
-
-		if (!Configuration.TryGetProperty(TelemetryClientConfigurationKeyName, out var telemetryClientConfigurationAsJsonElement))
-		{
-			throw new InvalidPluginExecutionException($"Cannot get proptery from configuration '{TelemetryClientConfigurationKeyName}'.");
-		}
-
-		var telemetryClientConfiguration = telemetryClientConfigurationAsJsonElement.Deserialize<TelemetryClientConfiguration>();
-
-		if (telemetryClientConfiguration == null)
-		{
-			throw new InvalidPluginExecutionException($"Cannot deserialize configuration 'TelemetryClient'.");
-		}
+		// get telemetry client configuration
+		var telemetryClientConfiguration = GetFromConfiguration<TelemetryClientConfiguration>(telemetryClientConfigurationKey);
 
 		// initialize HTTP client for telemetry publishers
 		telemetryPublisherHttpClient = new HttpClient();
@@ -118,11 +117,6 @@ public class PluginContext : IDisposable
 	#endregion
 
 	#region Properties
-
-	/// <summary>
-	/// The plugin configuration settings.
-	/// </summary>
-	protected JsonElement Configuration { get; }
 
 	/// <summary>
 	/// The platform logger.
@@ -256,6 +250,42 @@ public class PluginContext : IDisposable
 	#endregion
 
 	#region Methods: Protected
+
+	/// <summary>
+	/// Gets object from the configuration.
+	/// </summary>
+	/// <typeparam name="ConfiguartionType">Type of the configuration.</typeparam>
+	/// <param name="key">The key within the configuration.</param>
+	/// <returns>Instance of <typeparamref name="ConfiguartionType"/>.</returns>
+	/// <exception cref="InvalidPluginExecutionException"></exception>
+	protected ConfiguartionType GetFromConfiguration<ConfiguartionType>
+	(
+		String key
+	)
+	{
+		if (!configuration.TryGetProperty(key, out var value))
+		{
+			throw new InvalidPluginExecutionException($"Configuration property '{key}' does not exist.");
+		}
+
+		ConfiguartionType? result;
+
+		try
+		{
+			result = value.Deserialize<ConfiguartionType>();
+		}
+		catch (JsonException)
+		{
+			throw new InvalidPluginExecutionException($"Configuration property '{key}' cannot be deserialized.");
+		}
+
+		if (result is null)
+		{
+			throw new InvalidPluginExecutionException($"Configuration property '{key}' is null.");
+		}
+
+		return result;
+	}
 
 	/// <summary>
 	/// Releases resources associated with the instance.

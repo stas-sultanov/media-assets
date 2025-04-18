@@ -1,13 +1,14 @@
 <Solution>
-	<Folder Name="/Files/">
+	<Folder Name="/.files/">
 		<File Path="../.editorconfig" />
+		<File Path="../.gitignore" />
 		<File Path="readme.md" />
 	</Folder>
 	<Folder Name="/Base/">
-		<Project Path="Base/src/Base.csproj" />
-		<Project Path="Base/tests/BaseTests.csproj" />
+		<Project Path="base.src/Base.csproj" />
+		<Project Path="base.tests/BaseTests.csproj" />
 	</Folder>
 	<Folder Name="/Demo/" >
-		<Project Path="Demo/src/Plugins.csproj" />
+		<Project Path="demo.src/Plugins.csproj" />
 	</Folder>
 </Solution>

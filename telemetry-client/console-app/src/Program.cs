@@ -1,5 +1,5 @@
-﻿// Created by Stas Sultanov.
-// Copyright © Stas Sultanov.
+﻿// Authored by Stas Sultanov
+// Copyright © Stas Sultanov
 
 using Azure.Monitor.Telemetry;
 using Azure.Monitor.Telemetry.Dependency;

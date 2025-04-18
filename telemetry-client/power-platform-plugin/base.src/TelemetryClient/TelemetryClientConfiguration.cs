@@ -1,5 +1,5 @@
-// Created by Stas Sultanov.
-// Copyright © Stas Sultanov.
+// Authored by Stas Sultanov
+// Copyright © Stas Sultanov
 
 namespace Azure.Monitor.Telemetry;
 
@@ -19,5 +19,5 @@ public sealed class TelemetryClientConfiguration
 	/// <summary>
 	/// The optional key-value pairs of tags to include with telemetry data.
 	/// </summary>
-	public required IReadOnlyDictionary<String, String> Tags { get; init; }
+	public IReadOnlyDictionary<String, String> Tags { get; init; } = new Dictionary<String, String>();
 }

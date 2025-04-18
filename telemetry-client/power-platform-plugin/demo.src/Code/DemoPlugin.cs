@@ -1,5 +1,5 @@
-// Created by Stas Sultanov.
-// Copyright © Stas Sultanov.
+// Authored by Stas Sultanov
+// Copyright © Stas Sultanov
 
 namespace Stas.PowerPlatform.Demo;
 
@@ -12,7 +12,7 @@ public sealed class DemoPlugin : Plugin<PluginContext>
 {
 	#region Constants
 
-	private const String configurationEnvironmentVariableKeyName = @"[INSERT ENVIRONMENT VARIABLE NAME]";
+	private const String configurationEnvironmentVariableKeyName = "[INSERT ENVIRONMENT VARIABLE NAME]";
 
 	#endregion
 
