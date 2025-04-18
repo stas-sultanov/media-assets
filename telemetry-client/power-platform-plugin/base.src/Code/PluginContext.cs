@@ -36,7 +36,7 @@ public class PluginContext : IDisposable
 	/// <summary>
 	/// The plugin configuration.
 	/// </summary>
-	private readonly JsonElement configuration;
+	private readonly JsonDocument configuration;
 
 	/// <summary>
 	/// The <see cref="HttpClient"/> instance used by telemetry publishers.
@@ -81,10 +81,8 @@ public class PluginContext : IDisposable
 		}
 
 		// deserialize configuration
-		using var config = JsonSerializer.Deserialize<JsonDocument>(configurationAsString)
+		configuration = JsonSerializer.Deserialize<JsonDocument>(configurationAsString)
 			?? throw new InvalidPluginExecutionException($"Environment variable '{environmentVariablesConfigName}' can not be deserialized.");
-
-		configuration = config.RootElement;
 
 		// get telemetry client configuration
 		var telemetryClientConfiguration = GetFromConfiguration<TelemetryClientConfiguration>(telemetryClientConfigurationKey);
@@ -254,25 +252,25 @@ public class PluginContext : IDisposable
 	/// <summary>
 	/// Gets object from the configuration.
 	/// </summary>
-	/// <typeparam name="ConfiguartionType">Type of the configuration.</typeparam>
+	/// <typeparam name="ConfigurationType">Type of the configuration.</typeparam>
 	/// <param name="key">The key within the configuration.</param>
-	/// <returns>Instance of <typeparamref name="ConfiguartionType"/>.</returns>
+	/// <returns>Instance of <typeparamref name="ConfigurationType"/>.</returns>
 	/// <exception cref="InvalidPluginExecutionException"></exception>
-	protected ConfiguartionType GetFromConfiguration<ConfiguartionType>
+	protected ConfigurationType GetFromConfiguration<ConfigurationType>
 	(
 		String key
 	)
 	{
-		if (!configuration.TryGetProperty(key, out var value))
+		if (!configuration.RootElement.TryGetProperty(key, out var value))
 		{
 			throw new InvalidPluginExecutionException($"Configuration property '{key}' does not exist.");
 		}
 
-		ConfiguartionType? result;
+		ConfigurationType? result;
 
 		try
 		{
-			result = value.Deserialize<ConfiguartionType>();
+			result = value.Deserialize<ConfigurationType>();
 		}
 		catch (JsonException)
 		{
@@ -306,7 +304,8 @@ public class PluginContext : IDisposable
 		// Check if the call is from Dispose() method
 		if (fromDispose)
 		{
-			telemetryPublisherHttpClient.Dispose();
+			telemetryPublisherHttpClient?.Dispose();
+			configuration?.Dispose();
 		}
 
 		// Set disposed
