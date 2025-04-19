@@ -20,14 +20,45 @@ using Stas.PowerPlatform;
 [TestClass]
 public sealed class PluginContextTest
 {
+	#region Constants
+
+	private const String ConfigurationValue = @"
+	{
+		""TelemetryClient"":
+		{
+			""Publishers"":
+			[
+				{
+					""Authenticate"": true,
+					""IngestionEndpoint"": ""https://dc.in.applicationinsights.azure.com/"",
+					""InstrumentationKey"": ""11111111-1111-1111-1111-111111111111"",
+					""ManagedIdentityId"": ""b2719b6e-8f3b-4c9b-9a2e-4f5b5e5f5e5f""
+				},
+				{
+					""Authenticate"": true,
+					""IngestionEndpoint"": ""https://dc.in.applicationinsights.azure.com/"",
+					""InstrumentationKey"": ""22222222-2222-2222-2222-222222222222""
+				},
+				{
+					""IngestionEndpoint"": ""https://dc.in.applicationinsights.azure.com/"",
+					""InstrumentationKey"": ""33333333-3333-3333-3333-333333333333""
+				}
+			]
+		}
+	}";
+
+	private const String ConfigurationKey = "TestPlugin";
+
+	#endregion
+
 	#region Methods Tests
 
 	[TestMethod]
 	public void Constructor_ShouldInitializeProperties_WhenServiceProviderIsValid()
 	{
-		var environmentMock = new PowerPlatformEnvironmentMock();
+		var environmentMock = new PowerPlatformEnvironmentMock(ConfigurationKey, ConfigurationValue);
 
-		var pluginContext = new PluginContext(environmentMock!.mock_ServiceProvider.Object, PowerPlatformEnvironmentMock.configurationKey);
+		var pluginContext = new PluginContext(environmentMock!.ServiceProvider.Object, ConfigurationKey);
 
 		Assert.AreEqual(environmentMock.mock_Logger.Object, pluginContext.Logger);
 		Assert.AreEqual(environmentMock.mock_ManagedIdentityService.Object, pluginContext.ManagedIdentityService);
@@ -41,26 +72,26 @@ public sealed class PluginContextTest
 	[TestMethod]
 	public void GetService_ShouldThrowException_WhenServiceNotFound()
 	{
-		var environmentMock = new PowerPlatformEnvironmentMock();
+		var environmentMock = new PowerPlatformEnvironmentMock(ConfigurationKey, ConfigurationValue);
 
-		_ = environmentMock.mock_ServiceProvider.Setup(sp => sp.GetService(typeof(ILogger))).Returns(null!);
+		_ = environmentMock.ServiceProvider.Setup(sp => sp.GetService(typeof(ILogger))).Returns(null!);
 
 		_ = Assert.ThrowsExactly<InvalidPluginExecutionException>
 		(
-			() => _ = new PluginContext(environmentMock.mock_ServiceProvider.Object, String.Empty)
+			() => _ = new PluginContext(environmentMock.ServiceProvider.Object, String.Empty)
 		);
 	}
 
 	[TestMethod]
 	public void CreateOrganizationService_ShouldThrowException_WhenServiceNotCreated()
 	{
-		var environmentMock = new PowerPlatformEnvironmentMock();
+		var environmentMock = new PowerPlatformEnvironmentMock(ConfigurationKey, ConfigurationValue);
 
 		_ = environmentMock.mock_OrganizationServiceFactory.Setup(factory => factory.CreateOrganizationService(It.IsAny<Guid>())).Returns((IOrganizationService) null!);
 
 		_ = Assert.ThrowsExactly<InvalidPluginExecutionException>
 		(
-			() => _ = new PluginContext(environmentMock.mock_ServiceProvider.Object, String.Empty)
+			() => _ = new PluginContext(environmentMock.ServiceProvider.Object, String.Empty)
 		);
 	}
 

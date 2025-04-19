@@ -17,47 +17,14 @@ using Moq;
 /// <summary>
 /// Provides a mock of Power Platform Environment for testing purposes.
 /// </summary>
-internal sealed class PowerPlatformEnvironmentMock
+public sealed class PowerPlatformEnvironmentMock
 {
-	#region Constants
-
-	internal const String configurationAsString = @"
-	{
-		""TelemetryClient"":
-		{
-			""Publishers"":
-			[
-				{
-					""Authenticate"": true,
-					""IngestionEndpoint"": ""https://dc.in.applicationinsights.azure.com/"",
-					""InstrumentationKey"": ""11111111-1111-1111-1111-111111111111"",
-					""ManagedIdentityId"": ""b2719b6e-8f3b-4c9b-9a2e-4f5b5e5f5e5f""
-				},
-				{
-					""Authenticate"": true,
-					""IngestionEndpoint"": ""https://dc.in.applicationinsights.azure.com/"",
-					""InstrumentationKey"": ""22222222-2222-2222-2222-222222222222""
-				},
-				{
-					""IngestionEndpoint"": ""https://dc.in.applicationinsights.azure.com/"",
-					""InstrumentationKey"": ""33333333-3333-3333-3333-333333333333""
-				}
-			]
-		}
-	}";
-
-	internal const String configurationKey = "Stas_TestPlugin";
-
-	#endregion
-
 	#region Data
 
 	internal readonly String managedIdentityTokenValue = "BH5BHYB45BU9G5B9GBUG54BUB59GU54GBU9G4BUBC3B394BUC43BUC43B9UB943CBUC";
 
 	internal readonly Guid contextInitiatingUserId = Guid.NewGuid();
 	internal readonly Guid contextUserId = Guid.NewGuid();
-
-	internal readonly Mock<IServiceProvider> mock_ServiceProvider;
 	internal readonly Mock<ILogger> mock_Logger;
 	internal readonly Mock<IManagedIdentityService> mock_ManagedIdentityService;
 	internal readonly Mock<IOrganizationServiceFactory> mock_OrganizationServiceFactory;
@@ -66,11 +33,17 @@ internal sealed class PowerPlatformEnvironmentMock
 	internal readonly Mock<IOrganizationService> mock_OrganizationService_InitiatingUser;
 	internal readonly Mock<IOrganizationService> mock_OrganizationService_User;
 
+	public Mock<IServiceProvider> ServiceProvider { get; }
+
 	#endregion
 
-	public PowerPlatformEnvironmentMock()
+	public PowerPlatformEnvironmentMock
+	(
+		String configurationKey,
+		String configurationValue
+	)
 	{
-		mock_ServiceProvider = new Mock<IServiceProvider>();
+		ServiceProvider = new Mock<IServiceProvider>();
 		mock_Logger = new Mock<ILogger>();
 		mock_ManagedIdentityService = new Mock<IManagedIdentityService>();
 		mock_OrganizationServiceFactory = new Mock<IOrganizationServiceFactory>();
@@ -79,11 +52,11 @@ internal sealed class PowerPlatformEnvironmentMock
 		mock_OrganizationService_InitiatingUser = new Mock<IOrganizationService>();
 		mock_OrganizationService_User = new Mock<IOrganizationService>();
 
-		_ = mock_ServiceProvider.Setup(serviceProvider => serviceProvider.GetService(typeof(ILogger))).Returns(mock_Logger.Object);
-		_ = mock_ServiceProvider.Setup(serviceProvider => serviceProvider.GetService(typeof(IManagedIdentityService))).Returns(mock_ManagedIdentityService.Object);
-		_ = mock_ServiceProvider.Setup(serviceProvider => serviceProvider.GetService(typeof(IOrganizationServiceFactory))).Returns(mock_OrganizationServiceFactory.Object);
-		_ = mock_ServiceProvider.Setup(serviceProvider => serviceProvider.GetService(typeof(IPluginExecutionContext7))).Returns(mock_PluginExecutionContext.Object);
-		_ = mock_ServiceProvider.Setup(serviceProvider => serviceProvider.GetService(typeof(ITracingService))).Returns(mock_TracingService.Object);
+		_ = ServiceProvider.Setup(serviceProvider => serviceProvider.GetService(typeof(ILogger))).Returns(mock_Logger.Object);
+		_ = ServiceProvider.Setup(serviceProvider => serviceProvider.GetService(typeof(IManagedIdentityService))).Returns(mock_ManagedIdentityService.Object);
+		_ = ServiceProvider.Setup(serviceProvider => serviceProvider.GetService(typeof(IOrganizationServiceFactory))).Returns(mock_OrganizationServiceFactory.Object);
+		_ = ServiceProvider.Setup(serviceProvider => serviceProvider.GetService(typeof(IPluginExecutionContext7))).Returns(mock_PluginExecutionContext.Object);
+		_ = ServiceProvider.Setup(serviceProvider => serviceProvider.GetService(typeof(ITracingService))).Returns(mock_TracingService.Object);
 
 		_ = mock_ManagedIdentityService.Setup(m => m.AcquireToken(It.IsAny<IList<String>>())).Returns<IList<String>>
 		(
@@ -132,7 +105,7 @@ internal sealed class PowerPlatformEnvironmentMock
 					{
 						["schemaname"] = configurationKey,
 						["defaultvalue"] = null,
-						["v.value"] = new AliasedValue(null, "value", configurationAsString)
+						["v.value"] = new AliasedValue(null, "value", configurationValue)
 					},
 				])
 			);
