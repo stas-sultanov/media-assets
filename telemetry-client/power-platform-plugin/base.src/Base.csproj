@@ -14,7 +14,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CrmSdk.CoreAssemblies" Version="9.*" PrivateAssets="All" />
-		<PackageReference Include="Stas.Azure.Monitor.Telemetry" Version="1.1.0-rc" />
+		<PackageReference Include="Stas.Azure.Monitor.Telemetry" Version="1.*" />
 	</ItemGroup>
 
 </Project>

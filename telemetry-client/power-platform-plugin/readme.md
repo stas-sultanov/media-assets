@@ -65,6 +65,35 @@ The schema is pretty simple and should be clear to understand how to specify req
 
 Adjust the code of [DemoPlugin](/telemetry-client/power-platform-plugin/Demo/src/Code/DemoPlugin.cs) class, to use name of the environment variable that holds the configuration from [step 3](#3-environment-variables).
 
+## Pack & Sign
+
+To pack the project use the following script, replace X.Y.Z to required package version.
+
+```powershell
+dotnet pack demo.src\Plugins.csproj `
+	-c Release `
+	-o out `
+	-p:AssemblyVersion=X.Y.Z
+```
+
+To sign the NuGet package, use the following script:
+```powershell
+$certificateFile = '.\your-certificate-file.pfx';
+$passwordFile = '.\your-certificate-password.txt';
+$path = '.out\*.nupkg';
+
+$certificatePassword = Get-Content -Path $passwordFile;
+
+dotnet nuget sign $path `
+	--certificate-path $certificateFile `
+	--certificate-password $certificatePassword `
+	--hash-algorithm SHA256 `
+	--overwrite `
+	--timestamp-hash-algorithm SHA256 `
+	--timestamper http://timestamp.digicert.com `
+	--verbosity Detailed
+```
+
 ## 📌 Notes
 
 - This plugin is for demonstration purposes but can be used as a base for production.
