@@ -38,25 +38,26 @@ Create environment variable of text type with the following content:
 
 ```json
 {
-		"TelemetryClient":
-		{
-			"Publishers":
-			[
-				{
-					"Authenticate": true,
-					"IngestionEndpoint": "[INSERT HERE THE INGESTION ENDPOINT #A]",
-					"InstrumentationKey": "[INSERT HERE THE INSTRUMENTATION KEY #A]"
-				},
-				{
-					"IngestionEndpoint": "[INSERT HERE THE INGESTION ENDPOINT #B]",
-					"InstrumentationKey": "[INSERT HERE THE INSTRUMENTATION KEY #B]"
-				}
-			],
-			"Tags":
-			{
-				"ai.application.ver": "1.0.0"
-			}
-		}
+  "TelemetryClient":
+  {
+    "Publishers":
+    [
+      {
+        "Authenticate": true,
+	"IngestionEndpoint": "[INSERT HERE THE INGESTION ENDPOINT #A]",
+        "InstrumentationKey": "[INSERT HERE THE INSTRUMENTATION KEY #A]"
+      },
+      {
+        "IngestionEndpoint": "[INSERT HERE THE INGESTION ENDPOINT #B]",
+        "InstrumentationKey": "[INSERT HERE THE INSTRUMENTATION KEY #B]"
+      }
+    ],
+    "Tags":
+    {
+      "ai.application.ver": "1.0.0"
+    }
+  }
+}
 ```
 
 The schema is pretty simple and should be clear to understand how to specify required telemetry publishers with and without authentication.
